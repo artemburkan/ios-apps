@@ -11,13 +11,13 @@ import CoreLocation
 
 class WeatherViewController: UIViewController {
     
-    @IBOutlet weak var searchTextField: UITextField!
-    @IBOutlet weak var cityLabel: UILabel!
-    @IBOutlet weak var weatherImageView: UIImageView!
-    @IBOutlet weak var temperatureLabel: UILabel!
+    @IBOutlet private weak var searchTextField: UITextField!
+    @IBOutlet private weak var cityLabel: UILabel!
+    @IBOutlet private weak var weatherImageView: UIImageView!
+    @IBOutlet private weak var temperatureLabel: UILabel!
     
-    let weatherFetcher = WeatherFetcher()
-    let locationManager = CLLocationManager()
+    private let weatherFetcher = WeatherFetcher()
+    private let locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,15 +29,15 @@ class WeatherViewController: UIViewController {
         searchTextField.delegate = self
     }
     
-    @IBAction func searchPressed(_ sender: UIButton) {
+    @IBAction private func searchPressed(_ sender: UIButton) {
         searchTextField.endEditing(true)
     }
     
-    @IBAction func locationPressed(_ sender: UIButton) {
+    @IBAction private func locationPressed(_ sender: UIButton) {
         locationManager.requestLocation()
     }
 
-    var updateUI: (Result<Weather, RequestError>) -> Void {
+    private var updateUI: (Result<Weather, RequestError>) -> Void {
         return { responseData in
             switch responseData {
             case .success(let weather):
