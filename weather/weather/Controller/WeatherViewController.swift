@@ -56,21 +56,20 @@ class WeatherViewController: UIViewController {
 
 extension WeatherViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard let city = textField.text else { return true }
         
-        if let city = textField.text {
-            weatherFetcher.fetchByCityName(at: city) { [weak self] responseData in
-                self?.updateUI(with: responseData)
-            }
+        weatherFetcher.fetchByCityName(at: city) { [weak self] responseData in
+            self?.updateUI(with: responseData)
         }
         
         return true
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if let city = textField.text {
-           weatherFetcher.fetchByCityName(at: city) { [weak self] responseData in
-               self?.updateUI(with: responseData)
-           }
+        guard let city = textField.text else { return }
+        
+        weatherFetcher.fetchByCityName(at: city) { [weak self] responseData in
+            self?.updateUI(with: responseData)
         }
     }
 }
