@@ -37,19 +37,17 @@ class WeatherViewController: UIViewController {
         locationManager.requestLocation()
     }
 
-    private var updateUI: (Result<Weather, RequestError>) -> Void {
-        return { responseData in
-            switch responseData {
-            case .success(let weather):
-                DispatchQueue.main.async {
-                    self.searchTextField.text?.removeAll()
-                    self.cityLabel.text = weather.name
-                    self.temperatureLabel.text = weather.temperature
-                    self.weatherImageView.image = UIImage(systemName: weather.weatherIconName)
-                }
-            case .failure(let error):
-                print("Error of weather request: \(error)")
+    private func updateUI(with responseData: Result<Weather, RequestError>) -> Void {
+        switch responseData {
+        case .success(let weather):
+            DispatchQueue.main.async { [weak self] in
+                self?.searchTextField.text?.removeAll()
+                self?.cityLabel.text = weather.name
+                self?.temperatureLabel.text = weather.temperature
+                self?.weatherImageView.image = UIImage(systemName: weather.weatherIconName)
             }
+        case .failure(let error):
+            print("Error of weather request: \(error)")
         }
     }
 }
@@ -60,7 +58,9 @@ extension WeatherViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         if let city = textField.text {
-            weatherFetcher.fetchByCityName(at: city, responseDataHandler: updateUI)
+            weatherFetcher.fetchByCityName(at: city) { [weak self] responseData in
+                self?.updateUI(with: responseData)
+            }
         }
         
         return true
@@ -68,7 +68,9 @@ extension WeatherViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let city = textField.text {
-           weatherFetcher.fetchByCityName(at: city, responseDataHandler: updateUI)
+           weatherFetcher.fetchByCityName(at: city) { [weak self] responseData in
+               self?.updateUI(with: responseData)
+           }
         }
     }
 }
@@ -83,7 +85,9 @@ extension WeatherViewController: CLLocationManagerDelegate {
             let lat = String(location.coordinate.latitude)
             let lon = String(location.coordinate.longitude)
             
-            weatherFetcher.fetchByGeographicCoordinates(latitude: lat, longitude: lon, responseDataHandler: updateUI)
+            weatherFetcher.fetchByGeographicCoordinates(latitude: lat, longitude: lon) { [weak self] responseData in
+                self?.updateUI(with: responseData)
+            }
         }
     }
     
